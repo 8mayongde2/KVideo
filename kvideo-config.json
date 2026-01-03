@@ -745,5 +745,14 @@
       "detailPath": "",
       "enabled": true,
       "priority": 83
+   },
+    {
+      "id": ":siwa",
+      "name": "丝袜资源",
+      "baseUrl": "https://siwazyw.tv/api.php/provide/vod",
+      "searchPath": "",
+      "detailPath": "",
+      "enabled": true,
+      "priority": 84
    }
  ]
