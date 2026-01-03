@@ -506,7 +506,7 @@
     {
       "id": ":lajiao",
       "name": "辣椒资源",
-      "baseUrl": "https://apilj.com/api.php/provide/vod",
+      "baseUrl": "https://pz.168188.dpdns.org/?url=https://apilj.com/api.php/provide/vod",
       "searchPath": "",
       "detailPath": "",
       "enabled": true,
@@ -603,8 +603,8 @@
       "priority": 67
    },
     {
-      "id": ":lajiaoziyu",
-      "name": "辣椒资源黄黄",
+      "id": ":xingzy",
+      "name": "幸资源",
       "baseUrl": "https://apilj.com/api.php/provide",
       "searchPath": "",
       "detailPath": "",
