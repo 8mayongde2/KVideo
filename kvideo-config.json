@@ -655,5 +655,41 @@
       "detailPath": "",
       "enabled": true,
       "priority": 73
+   },
+    {
+      "id": ":youyouzy",
+      "name": "优优资源",
+      "baseUrl": "https://www.yyzywcj.com/api.php/provide/vod",
+      "searchPath": "",
+      "detailPath": "",
+      "enabled": true,
+      "priority": 74
+   },
+    {
+      "id": ":91jingpin",
+      "name": "91-精品",
+      "baseUrl": "https://91jpzyw.com/api.php/provide/vod",
+      "searchPath": "",
+      "detailPath": "",
+      "enabled": true,
+      "priority": 75
+   },
+    {
+      "id": ":huangsecangku",
+      "name": "黄色仓库",
+      "baseUrl": "https://hsckzy.xyz/api.php/provide/vod",
+      "searchPath": "",
+      "detailPath": "",
+      "enabled": true,
+      "priority": 76
+   },
+    {
+      "id": ":danaizi",
+      "name": "大奶子",
+      "baseUrl": "https://apidanaizi.com/api.php/provide/vod",
+      "searchPath": "",
+      "detailPath": "",
+      "enabled": true,
+      "priority": 77
    }
  ]
