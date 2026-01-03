@@ -700,5 +700,14 @@
       "detailPath": "",
       "enabled": true,
       "priority": 78
+   },
+    {
+      "id": ":didi",
+      "name": "滴滴资源",
+      "baseUrl": "https://api.ddapi.cc/api.php/provide/vod",
+      "searchPath": "",
+      "detailPath": "",
+      "enabled": true,
+      "priority": 79
    }
  ]
