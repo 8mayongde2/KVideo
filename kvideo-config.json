@@ -569,7 +569,7 @@
     {
       "id": ":xingbaziyuan",
       "name": "杏吧资源",
-      "baseUrl": "https://xingba111.com/api.php/provide/vod",
+      "baseUrl": "https://pz.168188.dpdns.org/?url=https://xingba222.com/api.php/provide/vod",
       "searchPath": "",
       "detailPath": "",
       "enabled": true,
@@ -691,5 +691,68 @@
       "detailPath": "",
       "enabled": true,
       "priority": 77
-   }
+   },
+    {
+      "id": ":doudou",
+      "name": "豆豆资源",
+      "baseUrl": "https://api.douapi.cc/api.php/provide/vod",
+      "searchPath": "",
+      "detailPath": "",
+      "enabled": true,
+      "priority": 78
+   },
+    {
+      "id": ":didi",
+      "name": "滴滴资源",
+      "baseUrl": "https://api.ddapi.cc/api.php/provide/vod",
+      "searchPath": "",
+      "detailPath": "",
+      "enabled": true,
+      "priority": 79
+   },
+    {
+      "id": ":heiliao",
+      "name": "黑料资源",
+      "baseUrl": "https://www.heiliaozyapi.com/api.php/provide/vod",
+      "searchPath": "",
+      "detailPath": "",
+      "enabled": true,
+      "priority": 80
+   },
+    {
+      "id": ":taohua",
+      "name": "桃花资源",
+      "baseUrl": "https://thzy1.me/api.php/provide/vod",
+      "searchPath": "",
+      "detailPath": "",
+      "enabled": true,
+      "priority": 81
+   },
+    {
+      "id": ":ckzy",
+      "name": "CK-资源",
+      "baseUrl": "https://ckzy.me/api.php/provide/vod",
+      "searchPath": "",
+      "detailPath": "",
+      "enabled": true,
+      "priority": 82
+   },
+    {
+      "id": ":xiaojiao",
+      "name": "香蕉资源",
+      "baseUrl": "https://www.xiangjiaozyw.com/api.php/provide/vod",
+      "searchPath": "",
+      "detailPath": "",
+      "enabled": true,
+      "priority": 83
+   },
+    {
+      "id": ":siwa",
+      "name": "丝袜资源",
+      "baseUrl": "https://siwazyw.tv/api.php/provide/vod",
+      "searchPath": "",
+      "detailPath": "",
+      "enabled": true,
+      "priority": 84
+   }
  ]
