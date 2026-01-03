@@ -605,7 +605,7 @@
     {
       "id": ":xingzy",
       "name": "幸资源",
-      "baseUrl": "https://apilj.com/api.php/provide",
+      "baseUrl": "https://xzybb2.com/api.php/provide/vod",
       "searchPath": "",
       "detailPath": "",
       "enabled": true,
