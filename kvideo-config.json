@@ -721,7 +721,7 @@
    },
     {
       "id": ":taohua",
-      "name": "桃花资源",
+      "name": "桃花资源",
       "baseUrl": "https://thzy1.me/api.php/provide/vod",
       "searchPath": "",
       "detailPath": "",
