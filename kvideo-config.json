@@ -727,14 +727,5 @@
       "detailPath": "",
       "enabled": true,
       "priority": 81
-   },
-    {
-      "id": ":ckzy",
-      "name": "CK资源",
-      "baseUrl": "https://ckzy.me/api.php/provide/vod",
-      "searchPath": "",
-      "detailPath": "",
-      "enabled": true,
-      "priority": 82
-   }
+   }
  ]
