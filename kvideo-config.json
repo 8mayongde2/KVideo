@@ -701,13 +701,13 @@
       "enabled": true,
       "priority": 78
    },
-    {
-      "id": ":heiliao",
-      "name": "黑料资源",
-      "baseUrl": "https://www.heiliaozyapi.com/api.php/provide/vod",
-      "searchPath": "",
-      "detailPath": "",
-      "enabled": true,
-      "priority": 79
-   }
+    {
+      "id": ":didizy",
+      "name": "didi资源",
+      "baseUrl": "https://api.ddapi.cc/api.php/provide/vod",
+      "searchPath": "",
+      "detailPath": "",
+      "enabled": true,
+      "priority": 79
+   }
  ]
