@@ -723,9 +723,9 @@
       "id": ":taohua",
       "name": "桃花资源",
       "baseUrl": "https://thzy1.me/api.php/provide/vod",
-      "searchPath": "",
-      "detailPath": "",
-      "enabled": true,
-      "priority": 81
-   }
+      "searchPath": "",
+      "detailPath": "",
+      "enabled": true,
+      "priority": 81
+   }
  ]
