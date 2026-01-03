@@ -736,5 +736,14 @@
       "detailPath": "",
       "enabled": true,
       "priority": 82
+   },
+    {
+      "id": ":xiangjiao",
+      "name": "香蕉资源",
+      "baseUrl": "https://www.xiangjiaozyw.com/api.php/provide/vod",
+      "searchPath": "",
+      "detailPath": "",
+      "enabled": true,
+      "priority": 83
    }
  ]
