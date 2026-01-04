@@ -907,5 +907,14 @@
       "detailPath": "",
       "enabled": true,
       "priority": 101
+   },
+    {
+      "id": ":shandianzy",
+      "name": "闪电资源",
+      "baseUrl": "https://xsd.sdzyapi.com/api.php/provide/vod",
+      "searchPath": "",
+      "detailPath": "",
+      "enabled": true,
+      "priority": 102
    }
  ]
