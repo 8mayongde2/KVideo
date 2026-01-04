@@ -810,7 +810,7 @@
       "priority": 90
    },
     {
-      "id": ":jinying",
+      "id": ":jinying02",
       "name": "金鹰点播",
       "baseUrl": "https://jinyingzy.com/api.php/provide/vod",
       "searchPath": "",
@@ -844,5 +844,41 @@
       "detailPath": "",
       "enabled": true,
       "priority": 94
+   },
+    {
+      "id": ":haohua",
+      "name": "豪华资源",
+      "baseUrl": "https://pz.168188.dpdns.org/?url=https://hhzyapi.com/api.php/provide/vod",
+      "searchPath": "",
+      "detailPath": "",
+      "enabled": true,
+      "priority": 95
+   },
+    {
+      "id": ":lovedan",
+      "name": "艾旦影视",
+      "baseUrl": "https://pz.v88.qzz.io/?url=https://lovedan.net/api.php/provide/vod",
+      "searchPath": "",
+      "detailPath": "",
+      "enabled": true,
+      "priority": 96
+   },
+    {
+      "id": ":shanhi
+      "name": "山海资源",
+      "baseUrl": "https://zy.sh0o.cn/api.php/provide/vod",
+      "searchPath": "",
+      "detailPath": "",
+      "enabled": true,
+      "priority": 97
+   },
+    {
+      "id": ":jinchan",
+      "name": "金蝉影视",
+      "baseUrl": "https://zy.jinchancaiji.com/api.php/provide/vod",
+      "searchPath": "",
+      "detailPath": "",
+      "enabled": true,
+      "priority": 98
    }
  ]
