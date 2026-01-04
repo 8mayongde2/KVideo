@@ -871,5 +871,14 @@
       "detailPath": "",
       "enabled": true,
       "priority": 97
+   },
+    {
+      "id": ":jinchan",
+      "name": "金蝉影视",
+      "baseUrl": "https://zy.jinchancaiji.com/api.php/provide/vod",
+      "searchPath": "",
+      "detailPath": "",
+      "enabled": true,
+      "priority": 98
    }
  ]
