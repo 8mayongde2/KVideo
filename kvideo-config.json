@@ -880,5 +880,14 @@
       "detailPath": "",
       "enabled": true,
       "priority": 98
+   },
+    {
+      "id": ":yinghua",
+      "name": "樱花资源",
+      "baseUrl": "https://m3u8.apiyhzy.com/api.php/provide/vod",
+      "searchPath": "",
+      "detailPath": "",
+      "enabled": true,
+      "priority": 99
    }
  ]
