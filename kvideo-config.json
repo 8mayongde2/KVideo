@@ -862,5 +862,14 @@
       "detailPath": "",
       "enabled": true,
       "priority": 96
+   },
+    {
+      "id": ":shanhi",
+      "name": "山海资源",
+      "baseUrl": "https://zy.sh0o.cn/api.php/provide/vod",
+      "searchPath": "",
+      "detailPath": "",
+      "enabled": true,
+      "priority": 97
    }
  ]
