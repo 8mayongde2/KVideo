@@ -888,7 +888,8 @@
       "searchPath": "",
       "detailPath": "",
       "enabled": true,
-      "priority": 99,
+      "priority": 99
+   },
     {
       "id": ":suoni",
       "name": "索尼资源",
@@ -897,6 +898,5 @@
       "detailPath": "",
       "enabled": true,
       "priority": 100
-   }
    }
  ]
