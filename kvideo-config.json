@@ -853,5 +853,23 @@
       "detailPath": "",
       "enabled": true,
       "priority": 95
+   },
+    {
+      "id": ":haohua",
+      "name": "豪华资源",
+      "baseUrl": "https://pz.168188.dpdns.org/?url=https://hhzyapi.com/api.php/provide/vod",
+      "searchPath": "",
+      "detailPath": "",
+      "enabled": true,
+      "priority": 95
+   },
+    {
+      "id": ":lovedan",
+      "name": "艾旦影视",
+      "baseUrl": "https://pz.v88.qzz.io/?url=https://lovedan.net/api.php/provide/vod",
+      "searchPath": "",
+      "detailPath": "",
+      "enabled": true,
+      "priority": 96
    }
  ]
