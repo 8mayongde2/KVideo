@@ -898,5 +898,14 @@
       "detailPath": "",
       "enabled": true,
       "priority": 100
+   },
+    {
+      "id": ":youzhizy",
+      "name": "优质资源",
+      "baseUrl": "https://api.yzzy-api.com/inc/apijson.php",
+      "searchPath": "",
+      "detailPath": "",
+      "enabled": true,
+      "priority": 101
    }
  ]
