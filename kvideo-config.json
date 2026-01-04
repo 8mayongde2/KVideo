@@ -29,7 +29,7 @@
       {
         "id": "baiduyun",
         "name": "百度云资源",
-        "baseUrl": "https://api.apibdzy.com/api.php/provide/vod",
+        "baseUrl": "https://pz.168188.dpdns.org/?url=https://api.apibdzy.com/api.php/provide/vod",
         "searchPath": "",
         "detailPath": "",
         "enabled": true,
@@ -101,7 +101,7 @@
       {
         "id": "ruyi",
         "name": "如意资源",
-        "baseUrl": "https://cj.rycjapi.com/api.php/provide/vod",
+        "baseUrl": "https://pz.168188.dpdns.org/?url=https://cj.rycjapi.com/api.php/provide/vod",
         "searchPath": "",
         "detailPath": "",
         "enabled": true,
@@ -799,5 +799,50 @@
       "detailPath": "",
       "enabled": true,
       "priority": 89
+   },
+    {
+      "id": ":subo",
+      "name": "速播资源",
+      "baseUrl": "https://subocaiji.com/api.php/provide/vod",
+      "searchPath": "",
+      "detailPath": "",
+      "enabled": true,
+      "priority": 90
+   },
+    {
+      "id": ":jinying",
+      "name": "金鹰点播",
+      "baseUrl": "https://jinyingzy.com/api.php/provide/vod",
+      "searchPath": "",
+      "detailPath": "",
+      "enabled": true,
+      "priority": 91
+   },
+    {
+      "id": ":piaoling",
+      "name": "飘零资源",
+      "baseUrl": "https://p2100.net/api.php/provide/vod",
+      "searchPath": "",
+      "detailPath": "",
+      "enabled": true,
+      "priority": 92
+   },
+    {
+      "id": ":uku",
+      "name": "U酷影视",
+      "baseUrl": "https://api.ukuapi88.com/api.php/provide/vod",
+      "searchPath": "",
+      "detailPath": "",
+      "enabled": true,
+      "priority": 93
+   },
+    {
+      "id": ":mddm",
+      "name": "魔都动漫",
+      "baseUrl": "https://caiji.moduapi.cc/api.php/provide/vod",
+      "searchPath": "",
+      "detailPath": "",
+      "enabled": true,
+      "priority": 94
    }
  ]
