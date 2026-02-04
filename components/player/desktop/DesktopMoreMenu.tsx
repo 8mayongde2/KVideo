@@ -15,6 +15,7 @@ interface DesktopMoreMenuProps {
     onMouseLeave: () => void;
     onCopyLink: (type?: 'original' | 'proxy') => void;
     containerRef: React.RefObject<HTMLDivElement | null>;
+    isRotated?: boolean;
 }
 
 export function DesktopMoreMenu({
@@ -24,7 +25,8 @@ export function DesktopMoreMenu({
     onMouseEnter,
     onMouseLeave,
     onCopyLink,
-    containerRef
+    containerRef,
+    isRotated = false
 }: DesktopMoreMenuProps) {
     const {
         autoNextEpisode,
@@ -48,7 +50,8 @@ export function DesktopMoreMenu({
     } = usePlayerSettings();
 
     const buttonRef = React.useRef<HTMLButtonElement>(null);
-    const [menuPosition, setMenuPosition] = React.useState({ top: 0, left: 0 });
+    const menuRef = React.useRef<HTMLDivElement>(null);
+    const [menuPosition, setMenuPosition] = React.useState({ top: 0, left: 0, maxHeight: 'none', openUpward: false });
     const [isAdFilterOpen, setAdFilterOpen] = React.useState(false);
 
     const AD_FILTER_LABELS: Record<string, string> = {
@@ -62,23 +65,80 @@ export function DesktopMoreMenu({
 
     React.useEffect(() => {
         const updateFullscreen = () => {
-            setIsFullscreen(!!document.fullscreenElement);
+            // Check both native fullscreen and window fullscreen (CSS-based)
+            const nativeFullscreen = !!document.fullscreenElement;
+            const windowFullscreen = containerRef.current?.closest('.is-web-fullscreen') !== null;
+            setIsFullscreen(nativeFullscreen || windowFullscreen);
         };
         document.addEventListener('fullscreenchange', updateFullscreen);
+        // Also check periodically for window fullscreen changes (CSS class based)
+        const interval = setInterval(updateFullscreen, 500);
         updateFullscreen();
-        return () => document.removeEventListener('fullscreenchange', updateFullscreen);
-    }, []);
+        return () => {
+            document.removeEventListener('fullscreenchange', updateFullscreen);
+            clearInterval(interval);
+        };
+    }, [containerRef]);
 
-    React.useEffect(() => {
-        if (showMoreMenu && buttonRef.current && containerRef.current) {
-            const buttonRect = buttonRef.current.getBoundingClientRect();
-            const containerRect = containerRef.current.getBoundingClientRect();
+    // Dual Positioning Strategy
+    const calculateMenuPosition = React.useCallback(() => {
+        if (!buttonRef.current || !containerRef.current) return;
+
+        if (!isRotated) {
+            // Normal Mode: Non-rotated (Portrait on Mobile)
+            // Center the menu on screen for better visibility and touch access
             setMenuPosition({
-                top: buttonRect.bottom - containerRect.top + 10,
-                left: buttonRect.left - containerRect.left
+                top: window.innerHeight / 2,
+                left: window.innerWidth / 2,
+                maxHeight: '80vh',
+                openUpward: false
             });
+        } else {
+            // Rotated Mode: Use Container Coordinates (offset loop) and Portal to Container
+            let top = 0;
+            let left = 0;
+            let el: HTMLElement | null = buttonRef.current;
+
+            while (el && el !== containerRef.current) {
+                top += el.offsetTop;
+                left += el.offsetLeft;
+                el = el.offsetParent as HTMLElement;
+            }
+
+            const buttonHeight = buttonRef.current.offsetHeight;
+            const buttonWidth = buttonRef.current.offsetWidth;
+            const containerHeight = containerRef.current.offsetHeight;
+
+            const spaceBelow = containerHeight - (top + buttonHeight) - 20;
+            const spaceAbove = top - 20;
+
+            const estimatedMenuHeight = 450;
+            const actualMenuHeight = menuRef.current?.offsetHeight || estimatedMenuHeight;
+
+            const openUpward = spaceBelow < Math.min(actualMenuHeight, 300) && spaceAbove > spaceBelow;
+            const maxHeight = openUpward
+                ? Math.min(spaceAbove, actualMenuHeight)
+                : Math.min(spaceBelow, containerHeight * 0.7);
+
+            if (openUpward) {
+                setMenuPosition({
+                    top: top - 10,
+                    left: left + buttonWidth,
+                    maxHeight: `${maxHeight}px`,
+                    openUpward: true
+                });
+            } else {
+                setMenuPosition({
+                    top: top + buttonHeight + 10,
+                    left: left + buttonWidth,
+                    maxHeight: `${maxHeight}px`,
+                    openUpward: false
+                });
+            }
         }
-    }, [showMoreMenu, containerRef]);
+    }, [containerRef, isRotated]);
+
+
 
     // Auto-close menu on scroll
     React.useEffect(() => {
@@ -92,29 +152,38 @@ export function DesktopMoreMenu({
         return () => window.removeEventListener('scroll', handleScroll);
     }, [showMoreMenu, onToggleMoreMenu]);
 
+    React.useEffect(() => {
+        if (showMoreMenu) {
+            calculateMenuPosition();
+            const timer = setTimeout(calculateMenuPosition, 50);
+            return () => clearTimeout(timer);
+        }
+    }, [showMoreMenu, calculateMenuPosition, isRotated]);
+
     const handleToggle = () => {
-        if (!showMoreMenu && buttonRef.current && containerRef.current) {
-            const buttonRect = buttonRef.current.getBoundingClientRect();
-            const containerRect = containerRef.current.getBoundingClientRect();
-            setMenuPosition({
-                top: buttonRect.bottom - containerRect.top + 10,
-                left: buttonRect.left - containerRect.left
-            });
+        if (!showMoreMenu) {
+            calculateMenuPosition();
         }
         onToggleMoreMenu();
     };
 
     const MenuContent = (
         <div
-            className={`absolute z-[9999] bg-[var(--glass-bg)] backdrop-blur-[25px] saturate-[180%] rounded-[var(--radius-2xl)] border border-[var(--glass-border)] shadow-[var(--shadow-md)] p-1.5 sm:p-2 w-fit min-w-[200px] sm:min-w-[240px] animate-in fade-in zoom-in-95 duration-200 ${isFullscreen ? 'max-h-[70vh] overflow-y-auto' : ''
-                }`}
+            ref={menuRef}
+            className={`absolute z-[2147483647] bg-[var(--glass-bg)] backdrop-blur-[25px] saturate-[180%] rounded-[var(--radius-2xl)] border border-[var(--glass-border)] shadow-[var(--shadow-md)] p-1.5 sm:p-2 w-fit min-w-[200px] sm:min-w-[240px] animate-in fade-in zoom-in-95 duration-200 overflow-y-auto`}
             style={{
-                top: `${menuPosition.top}px`,
+                top: `${menuPosition.top}px`, // Always use absolute top
                 left: `${menuPosition.left}px`,
+                // If not rotated (Centered), translate -50% -50% to center
+                // If rotated (Side), translate -100% 0 (or whatever previous logic was)
+                transform: !isRotated ? 'translate(-50%, -50%)' : 'translateX(-100%)',
+                maxHeight: menuPosition.maxHeight,
+                bottom: 'auto'
             }}
             onMouseEnter={onMouseEnter}
             onMouseLeave={onMouseLeave}
             onClick={(e) => e.stopPropagation()}
+            onTouchStart={(e) => e.stopPropagation()}
         >
             {/* Copy Link Options */}
             {isProxied ? (
@@ -347,7 +416,8 @@ export function DesktopMoreMenu({
             </button>
 
             {/* More Menu Dropdown (Portal) */}
-            {showMoreMenu && typeof document !== 'undefined' && createPortal(MenuContent, containerRef.current || document.body)}
+            {/* More Menu Dropdown (Portal) */}
+            {showMoreMenu && typeof document !== 'undefined' && createPortal(MenuContent, (isRotated && containerRef.current) ? containerRef.current : document.body)}
         </div>
     );
 }

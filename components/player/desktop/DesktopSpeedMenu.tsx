@@ -10,6 +10,7 @@ interface DesktopSpeedMenuProps {
     onMouseEnter: () => void;
     onMouseLeave: () => void;
     containerRef: React.RefObject<HTMLDivElement | null>;
+    isRotated?: boolean;
 }
 
 export function DesktopSpeedMenu({
@@ -20,33 +21,94 @@ export function DesktopSpeedMenu({
     onToggleSpeedMenu,
     onMouseEnter,
     onMouseLeave,
-    containerRef
+    containerRef,
+    isRotated = false
 }: DesktopSpeedMenuProps) {
     const buttonRef = React.useRef<HTMLButtonElement>(null);
-    const [menuPosition, setMenuPosition] = React.useState({ top: 0, left: 0 });
+    const menuRef = React.useRef<HTMLDivElement>(null);
+    const [menuPosition, setMenuPosition] = React.useState({ top: 0, left: 0, maxHeight: 'none', openUpward: false });
 
     const [isFullscreen, setIsFullscreen] = React.useState(false);
 
     React.useEffect(() => {
         const updateFullscreen = () => {
-            setIsFullscreen(!!document.fullscreenElement);
+            // Check both native fullscreen and window fullscreen (CSS-based)
+            const nativeFullscreen = !!document.fullscreenElement;
+            const windowFullscreen = containerRef.current?.closest('.is-web-fullscreen') !== null;
+            setIsFullscreen(nativeFullscreen || windowFullscreen);
         };
         document.addEventListener('fullscreenchange', updateFullscreen);
+        // Also check periodically for window fullscreen changes (CSS class based)
+        const interval = setInterval(updateFullscreen, 500);
         updateFullscreen();
-        return () => document.removeEventListener('fullscreenchange', updateFullscreen);
-    }, []);
+        return () => {
+            document.removeEventListener('fullscreenchange', updateFullscreen);
+            clearInterval(interval);
+        };
+    }, [containerRef]);
 
-    React.useEffect(() => {
-        if (showSpeedMenu && buttonRef.current && containerRef.current) {
-            const buttonRect = buttonRef.current.getBoundingClientRect();
-            const containerRect = containerRef.current.getBoundingClientRect();
+    // Dual Positioning Strategy
+    const calculateMenuPosition = React.useCallback(() => {
+        if (!buttonRef.current || !containerRef.current) return;
 
+        if (!isRotated) {
+            // Normal Mode: Non-rotated (Portrait on Mobile)
+            // Center the menu on screen for better visibility and touch access
             setMenuPosition({
-                top: buttonRect.bottom - containerRect.top + 10,
-                left: buttonRect.right - containerRect.left
+                top: window.innerHeight / 2,
+                left: window.innerWidth / 2,
+                maxHeight: '80vh',
+                openUpward: false
             });
+        } else {
+            // Rotated Mode: Fullscreen/Landscape forced
+            // Use Container Coordinates (offset loop) and Portal to Container
+            // This ensures rotation transforms apply correctly to the menu
+
+            let top = 0;
+            let left = 0;
+            let el: HTMLElement | null = buttonRef.current;
+
+            while (el && el !== containerRef.current) {
+                top += el.offsetTop;
+                left += el.offsetLeft;
+                el = el.offsetParent as HTMLElement;
+            }
+
+            const buttonHeight = buttonRef.current.offsetHeight;
+            const buttonWidth = buttonRef.current.offsetWidth;
+            const containerHeight = containerRef.current.offsetHeight;
+
+            const spaceBelow = containerHeight - (top + buttonHeight) - 20;
+            const spaceAbove = top - 20;
+
+            const estimatedMenuHeight = 250;
+            const actualMenuHeight = menuRef.current?.offsetHeight || estimatedMenuHeight;
+
+            const openUpward = spaceBelow < Math.min(actualMenuHeight, 200) && spaceAbove > spaceBelow;
+            const maxHeight = openUpward
+                ? Math.min(spaceAbove, actualMenuHeight)
+                : Math.min(spaceBelow, containerHeight * 0.7);
+
+            if (openUpward) {
+                setMenuPosition({
+                    top: top - 10,
+                    left: left + buttonWidth,
+                    maxHeight: `${maxHeight}px`,
+                    openUpward: true
+                });
+            } else {
+                setMenuPosition({
+                    top: top + buttonHeight + 10,
+                    left: left + buttonWidth,
+                    maxHeight: `${maxHeight}px`,
+                    openUpward: false
+                });
+            }
         }
-    }, [showSpeedMenu, containerRef]);
+    }, [containerRef, isRotated]);
+
+
 
     // Auto-close menu on scroll
     React.useEffect(() => {
@@ -60,31 +122,38 @@ export function DesktopSpeedMenu({
         return () => window.removeEventListener('scroll', handleScroll);
     }, [showSpeedMenu, onToggleSpeedMenu]);
 
-    const handleToggle = () => {
-        if (!showSpeedMenu && buttonRef.current && containerRef.current) {
-            const buttonRect = buttonRef.current.getBoundingClientRect();
-            const containerRect = containerRef.current.getBoundingClientRect();
+    React.useEffect(() => {
+        if (showSpeedMenu) {
+            calculateMenuPosition();
+            const timer = setTimeout(calculateMenuPosition, 50);
+            return () => clearTimeout(timer);
+        }
+    }, [showSpeedMenu, calculateMenuPosition, isRotated]);
 
-            setMenuPosition({
-                top: buttonRect.bottom - containerRect.top + 10,
-                left: buttonRect.right - containerRect.left
-            });
+    const handleToggle = () => {
+        if (!showSpeedMenu) {
+            calculateMenuPosition();
         }
         onToggleSpeedMenu();
     };
 
-
     const MenuContent = (
         <div
-            className={`absolute z-[9999] bg-[var(--glass-bg)] backdrop-blur-[25px] saturate-[180%] rounded-[var(--radius-2xl)] border border-[var(--glass-border)] shadow-[var(--shadow-md)] p-1 sm:p-1.5 w-fit min-w-[3.5rem] sm:min-w-[4.5rem] animate-in fade-in zoom-in-95 duration-200 ${isFullscreen ? 'max-h-[60vh] overflow-y-auto' : ''
-                }`}
+            ref={menuRef}
+            className={`absolute z-[2147483647] bg-[var(--glass-bg)] backdrop-blur-[25px] saturate-[180%] rounded-[var(--radius-2xl)] border border-[var(--glass-border)] shadow-[var(--shadow-md)] p-1 sm:p-1.5 w-fit min-w-[3.5rem] sm:min-w-[4.5rem] animate-in fade-in zoom-in-95 duration-200 overflow-y-auto`}
             style={{
-                top: `${menuPosition.top}px`,
+                top: `${menuPosition.top}px`, // Always use absolute top
                 left: `${menuPosition.left}px`,
-                transform: 'translateX(-100%)', // Align right edge
+                // If not rotated (Centered), translate -50% -50% to center
+                // If rotated (Side), translate -100% 0 (or whatever previous logic was)
+                transform: !isRotated ? 'translate(-50%, -50%)' : 'translateX(-100%)',
+                maxHeight: menuPosition.maxHeight,
+                bottom: 'auto'
             }}
             onMouseEnter={onMouseEnter}
             onMouseLeave={onMouseLeave}
+            onClick={(e) => e.stopPropagation()}
+            onTouchStart={(e) => e.stopPropagation()}
         >
             {speeds.map((speed) => (
                 <button
@@ -114,8 +183,22 @@ export function DesktopSpeedMenu({
                 {playbackRate}x
             </button>
 
+            {/* Speed Menu (Portal) - Portal to container to inherit rotation but avoid overflow clipping if container has it? 
+                Actually, the container usually has overflow-hidden.
+                If we portal to containerRef, it is inside the container div.
+                If the container div has overflow-hidden, the menu will be clipped.
+                BUT DesktopVideoPlayer structure:
+                <div ref={containerRef} ...> (relative, no overflow hidden?)
+                  <div className="absolute inset-0 overflow-hidden ..."> (video wrapper)
+                  <DesktopOverlayWrapper ...>
+                So containerRef itself (outer wrapper) seems to NOT have overflow-hidden in my memory?
+                Checking DesktopVideoPlayer.tsx:
+                className={`kvideo-container relative aspect-video ...`}
+                It does NOT have overflow-hidden. The inner div does.
+                So portaling to containerRef is SAFE and CORRECT.
+            */}
             {/* Speed Menu (Portal) */}
-            {showSpeedMenu && typeof document !== 'undefined' && createPortal(MenuContent, containerRef.current || document.body)}
+            {showSpeedMenu && typeof document !== 'undefined' && createPortal(MenuContent, (isRotated && containerRef.current) ? containerRef.current : document.body)}
         </div>
     );
 }
