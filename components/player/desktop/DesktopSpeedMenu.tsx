@@ -26,7 +26,7 @@ export function DesktopSpeedMenu({
 }: DesktopSpeedMenuProps) {
     const buttonRef = React.useRef<HTMLButtonElement>(null);
     const menuRef = React.useRef<HTMLDivElement>(null);
-    const [menuPosition, setMenuPosition] = React.useState({ top: 0, left: 0, maxHeight: 'none', openUpward: false });
+    const [menuPosition, setMenuPosition] = React.useState({ top: 0, left: 0, maxHeight: 'none', openUpward: false, align: 'right' as 'left' | 'right' });
 
     const [isFullscreen, setIsFullscreen] = React.useState(false);
 
@@ -52,13 +52,47 @@ export function DesktopSpeedMenu({
         if (!buttonRef.current || !containerRef.current) return;
 
         if (!isRotated) {
-            // Normal Mode: Non-rotated (Portrait on Mobile)
-            // Center the menu on screen for better visibility and touch access
+            // Normal Mode: Non-rotated
+            // Use Viewport Coordinates but position relative to button (User Request: "Below button")
+            // And use Body Portal to escape container clipping
+            const buttonRect = buttonRef.current.getBoundingClientRect();
+            const viewportHeight = window.innerHeight;
+            const viewportWidth = window.innerWidth;
+
+            const spaceBelow = viewportHeight - buttonRect.bottom - 10;
+            const spaceAbove = buttonRect.top - 10;
+
+            const estimatedMenuHeight = 250;
+            const actualMenuHeight = menuRef.current?.offsetHeight || estimatedMenuHeight;
+
+            const openUpward = spaceBelow < Math.min(actualMenuHeight, 200) && spaceAbove > spaceBelow;
+            const maxHeight = openUpward
+                ? Math.min(spaceAbove, actualMenuHeight)
+                : Math.min(spaceBelow, viewportHeight * 0.7);
+
+            // Smart Horizontal Alignment:
+            // If button is on the left half of screen, align menu's left edge to button's left.
+            // If button is on the right half of screen, align menu's right edge to button's right.
+            const isLeftHalf = buttonRect.left < viewportWidth / 2;
+            const align = isLeftHalf ? 'left' : 'right';
+
+            let left = isLeftHalf ? buttonRect.left : buttonRect.right;
+
+            // Boundary clamping
+            if (isLeftHalf) {
+                left = Math.max(left, 10);
+            } else {
+                left = Math.min(left, viewportWidth - 10);
+            }
+
             setMenuPosition({
-                top: window.innerHeight / 2,
-                left: window.innerWidth / 2,
-                maxHeight: '80vh',
-                openUpward: false
+                top: openUpward
+                    ? buttonRect.top - 10
+                    : buttonRect.bottom + 10,
+                left: left,
+                maxHeight: `${maxHeight}px`,
+                openUpward: openUpward,
+                align: align
             });
         } else {
             // Rotated Mode: Fullscreen/Landscape forced
@@ -75,36 +109,42 @@ export function DesktopSpeedMenu({
                 el = el.offsetParent as HTMLElement;
             }
 
-            const buttonHeight = buttonRef.current.offsetHeight;
             const buttonWidth = buttonRef.current.offsetWidth;
+            const buttonHeight = buttonRef.current.offsetHeight;
+            const containerWidth = containerRef.current.offsetWidth;
             const containerHeight = containerRef.current.offsetHeight;
 
-            const spaceBelow = containerHeight - (top + buttonHeight) - 20;
-            const spaceAbove = top - 20;
+            // In rotated mode (90deg CW):
+            // Landscape Vertical Axis = Container X Axis (left in code)
+            // Landscape Horizontal Axis = Container Y Axis (top in code)
+
+            // Visual available space in landscape:
+            // Top of landscape is Container Left (x=0)
+            // Bottom of landscape is Container Right (x=H_cont)
+            const spaceToLandscapeTop = left;
+            const spaceToLandscapeBottom = containerWidth - (left + buttonWidth);
 
             const estimatedMenuHeight = 250;
             const actualMenuHeight = menuRef.current?.offsetHeight || estimatedMenuHeight;
 
-            const openUpward = spaceBelow < Math.min(actualMenuHeight, 200) && spaceAbove > spaceBelow;
+            const openUpward = spaceToLandscapeBottom < Math.min(actualMenuHeight, 200) && spaceToLandscapeTop > spaceToLandscapeBottom;
             const maxHeight = openUpward
-                ? Math.min(spaceAbove, actualMenuHeight)
-                : Math.min(spaceBelow, containerHeight * 0.7);
+                ? Math.min(spaceToLandscapeTop - 10, actualMenuHeight)
+                : Math.min(spaceToLandscapeBottom - 10, containerHeight * 0.7);
 
-            if (openUpward) {
-                setMenuPosition({
-                    top: top - 10,
-                    left: left + buttonWidth,
-                    maxHeight: `${maxHeight}px`,
-                    openUpward: true
-                });
-            } else {
-                setMenuPosition({
-                    top: top + buttonHeight + 10,
-                    left: left + buttonWidth,
-                    maxHeight: `${maxHeight}px`,
-                    openUpward: false
-                });
-            }
+            // Horizontal alignment (Landscape):
+            // Landscape Right = Container Top (y=0)
+            // Landscape Left = Container Bottom (y=H_cont)
+            const isLandscapeRightHalf = top < containerHeight / 2;
+            const align = isLandscapeRightHalf ? 'left' : 'right';
+
+            setMenuPosition({
+                top: top, // Fixed horizontal container coordinate
+                left: left, // Fixed vertical container coordinate
+                maxHeight: `${maxHeight}px`,
+                openUpward: openUpward,
+                align: align
+            });
         }
     }, [containerRef, isRotated]);
 
@@ -140,15 +180,32 @@ export function DesktopSpeedMenu({
     const MenuContent = (
         <div
             ref={menuRef}
-            className={`absolute z-[2147483647] bg-[var(--glass-bg)] backdrop-blur-[25px] saturate-[180%] rounded-[var(--radius-2xl)] border border-[var(--glass-border)] shadow-[var(--shadow-md)] p-1 sm:p-1.5 w-fit min-w-[3.5rem] sm:min-w-[4.5rem] animate-in fade-in zoom-in-95 duration-200 overflow-y-auto`}
+            className={`absolute z-[2147483647] bg-[var(--glass-bg)] backdrop-blur-[25px] saturate-[180%] rounded-[var(--radius-2xl)] border border-[var(--glass-border)] shadow-[var(--shadow-md)] p-1 sm:p-1.5 w-fit ${isRotated ? 'min-w-[2.5rem]' : 'min-w-[3.5rem] sm:min-w-[4.5rem]'} animate-in fade-in zoom-in-95 duration-200 overflow-y-auto`}
             style={{
-                top: `${menuPosition.top}px`, // Always use absolute top
-                left: `${menuPosition.left}px`,
-                // If not rotated (Centered), translate -50% -50% to center
-                // If rotated (Side), translate -100% 0 (or whatever previous logic was)
-                transform: !isRotated ? 'translate(-50%, -50%)' : 'translateX(-100%)',
+                ...(isRotated ? {
+                    // In Rotated Mode:
+                    // menuPosition.left is Container X (Landscape Vertical)
+                    // menuPosition.top is Container Y (Landscape Horizontal)
+
+                    // Vertical Anchoring (Above/Below Button)
+                    ...(menuPosition.openUpward ? {
+                        right: `calc(100% - ${menuPosition.left}px + 10px)`,
+                        left: 'auto'
+                    } : {
+                        left: `${menuPosition.left + buttonRef.current?.offsetWidth! + 10}px`,
+                        right: 'auto'
+                    }),
+
+                    // Horizontal Anchoring (Left/Right to Button)
+                    top: `${menuPosition.top}px`,
+                    transform: menuPosition.align === 'right' ? 'translateY(-100%)' : 'none',
+                } : {
+                    // Normal Mode
+                    top: `${menuPosition.top}px`,
+                    left: `${menuPosition.left}px`,
+                    transform: menuPosition.align === 'right' ? 'translateX(-100%)' : 'none',
+                }),
                 maxHeight: menuPosition.maxHeight,
-                bottom: 'auto'
             }}
             onMouseEnter={onMouseEnter}
             onMouseLeave={onMouseLeave}
@@ -159,7 +216,7 @@ export function DesktopSpeedMenu({
                 <button
                     key={speed}
                     onClick={() => onSpeedChange(speed)}
-                    className={`w-full px-3 py-1 sm:px-4 sm:py-1.5 rounded-[var(--radius-2xl)] text-xs sm:text-sm font-medium transition-colors ${playbackRate === speed
+                    className={`w-full ${isRotated ? 'px-2 py-0.5 text-[10px]' : 'px-3 py-1 sm:px-4 sm:py-1.5 text-xs sm:text-sm'} rounded-[var(--radius-2xl)] font-medium transition-colors ${playbackRate === speed
                         ? 'bg-[var(--accent-color)] text-white'
                         : 'text-[var(--text-color)] hover:bg-[color-mix(in_srgb,var(--accent-color)_15%,transparent)]'
                         }`}
